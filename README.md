@@ -143,5 +143,5 @@ If you working in a group, we recommend that **all** team members read the [Work
 
 ## Contributors
 
-- [Jorvan White](https://github.com/jorvanW)
+- [Jorvan White](https://github.com/JorvanW)
 - [Tomislav Dukez](https://github.com/tomdu3)
