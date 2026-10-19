@@ -1,4 +1,5 @@
 export function getDateFromDaysObject(year, monthName, dayName, occurrence) {
+  // Constants for months in a year, days of the week, and occurrences of the day of the week in a month for date calculation
   const monthNames = [
     "January",
     "February",
@@ -24,21 +25,23 @@ export function getDateFromDaysObject(year, monthName, dayName, occurrence) {
   ];
   const occurrenceNumbers = { first: 1, second: 2, third: 3, fourth: 4 };
 
+  // Get the index of the month and day of the week
   const monthIndex = monthNames.indexOf(monthName);
   const targetWeekday = dayNames.indexOf(dayName);
 
   if (monthIndex === -1) throw new Error(`Unknown month: ${monthName}`);
   if (targetWeekday === -1) throw new Error(`Unknown weekday: ${dayName}`);
 
+  // Find the number of days in the month
   const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
-  console.log(daysInMonth);
 
+  // Calculate the day of the month based on the occurrence
+  // If the occurrence is "last", find the last occurrence of the day of the week
   if (occurrence === "last") {
     const lastWeekday = new Date(
       Date.UTC(year, monthIndex, daysInMonth),
     ).getUTCDay();
     const dayOfMonth = daysInMonth - ((lastWeekday - targetWeekday + 7) % 7);
-    console.log(new Date(Date.UTC(year, monthIndex, dayOfMonth)));
     return new Date(Date.UTC(year, monthIndex, dayOfMonth));
   }
 
@@ -48,7 +51,6 @@ export function getDateFromDaysObject(year, monthName, dayName, occurrence) {
   const firstWeekday = new Date(Date.UTC(year, monthIndex, 1)).getUTCDay();
   const firstOccurrence = 1 + ((targetWeekday - firstWeekday + 7) % 7);
   const dayOfMonth = firstOccurrence + 7 * (n - 1);
-  console.log(new Date(Date.UTC(year, monthIndex, dayOfMonth)));
   if (dayOfMonth > daysInMonth) {
     throw new Error(`No ${occurrence} ${dayName} in ${monthName} ${year}`);
   }
@@ -56,4 +58,17 @@ export function getDateFromDaysObject(year, monthName, dayName, occurrence) {
   return new Date(Date.UTC(year, monthIndex, dayOfMonth));
 }
 
-console.log(getDateFromDaysObject(2026, "November", "Saturday", "third"));
+export function getOccurencesForTheMonth(year, monthName, days) {
+  // Filter the days to get only the ones for the specified month
+  return days
+    .filter((day) => day.monthName === monthName)
+    .map((day) => ({
+      date: getDateFromDaysObject(
+        year,
+        day.monthName,
+        day.dayName,
+        day.occurrence,
+      ),
+      name: day.name,
+    }));
+}
