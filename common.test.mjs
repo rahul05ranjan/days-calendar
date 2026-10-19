@@ -1,25 +1,24 @@
-import { getDateFromDaysObject } from "./common.mjs";
+import { getDateFromDaysObject, getOccurencesForTheMonth } from "./common.mjs";
 import assert from "node:assert";
 import test from "node:test";
+import days from "./days.json" with { type: "json" };
 
-// - If October 2024 is being shown, October 8th must show Ada Lovelace Day.
-// - If October 2025 is being shown, October 14th must show Ada Lovelace Day.
-
+// Tests for getDateFromDaysObject function
 test("getDateFromDaysObject for Ada Lovelace Day is correct", () => {
   assert.deepStrictEqual(
     getDateFromDaysObject(2024, "October", "Tuesday", "second"),
-    new Date(Date.UTC(2024, 9, 8)),
+    new Date(Date.UTC(2024, 9, 8)), // Second Tuesday is 8th of October 2024
   );
   assert.deepStrictEqual(
     getDateFromDaysObject(2025, "October", "Tuesday", "second"),
-    new Date(Date.UTC(2025, 9, 14)),
+    new Date(Date.UTC(2025, 9, 14)), // Second Tuesday is 14th of October 2025
   );
 });
 
 test("getDateFromDaysObject for last occurrence of day of week is correct", () => {
   assert.deepStrictEqual(
     getDateFromDaysObject(2024, "October", "Tuesday", "last"),
-    new Date(Date.UTC(2024, 9, 29)),
+    new Date(Date.UTC(2024, 9, 29)), // Last Tuesday is 29th of October 2024
   );
 });
 
@@ -39,4 +38,50 @@ test("getDateFromDaysObject throws error when occurrence not found", () => {
   assert.throws(() =>
     getDateFromDaysObject(2024, "October", "Tuesday", "fifth"),
   );
+});
+
+// Tests for getOccurencesForTheMonth function
+
+test("getOccurencesForTheMonth for October 2024 is correct", () => {
+  assert.deepStrictEqual(getOccurencesForTheMonth(2024, "October", days), [
+    { date: new Date(Date.UTC(2024, 9, 8)), name: "Ada Lovelace Day" }, // Second Tuesday is 8th of October 2024
+    { date: new Date(Date.UTC(2024, 9, 25)), name: "World Lemur Day" }, // Last Friday is 25th of October 2024
+  ]);
+});
+
+test("getOccurencesForTheMonth for October 2025 is correct", () => {
+  assert.deepStrictEqual(getOccurencesForTheMonth(2025, "October", days), [
+    { date: new Date(Date.UTC(2025, 9, 14)), name: "Ada Lovelace Day" }, // Second Tuesday is 14th of October 2025
+    { date: new Date(Date.UTC(2025, 9, 31)), name: "World Lemur Day" }, // Last Friday is 31st of October 2025
+  ]);
+});
+
+test("getOccurencesForTheMonth for May 2025 is correct", () => {
+  assert.deepStrictEqual(getOccurencesForTheMonth(2025, "May", days), [
+    {
+      date: new Date(Date.UTC(2025, 4, 10)), // Second Saturday is 10th of May 2025
+      name: "International Binturong Day",
+    },
+  ]);
+});
+
+test("getOccurencesForTheMonth for January 2025 is correct", () => {
+  assert.deepStrictEqual(getOccurencesForTheMonth(2025, "January", days), []);
+});
+
+test("getOccurencesForTheMonth for August 2026 is correct", () => {
+  const newDays = [
+    {
+      name: "Summer Bank Holiday",
+      monthName: "August",
+      dayName: "Monday",
+      occurrence: "last",
+    },
+  ];
+  assert.deepStrictEqual(getOccurencesForTheMonth(2026, "August", newDays), [
+    {
+      date: new Date(Date.UTC(2026, 7, 31)), // Last Monday is 31st of August 2026
+      name: "Summer Bank Holiday",
+    },
+  ]);
 });
