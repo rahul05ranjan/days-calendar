@@ -2,6 +2,6 @@
   "name": "project-days-calendar",
   "version": "1.0.0",
   "scripts": {
-    "test": "node common.test.mjs"
+    "test": "node --test common.test.mjs tests/date-utils.test.js"
   }
 }
